@@ -1,11 +1,13 @@
 # Dependencies
 node_modules/
+.venv/
 
 # Build outputs
 dist/
 build/
 .next/
 out/
+*.tsbuildinfo
 
 # Environment files
 .env
@@ -18,6 +20,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
 
 # OS and editor files
 .DS_Store
