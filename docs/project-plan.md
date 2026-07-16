@@ -63,9 +63,10 @@ These features are planned for later versions after the core AI experience is wo
 
 ### Backend
 
-- FastAPI
-- Python
-- Pydantic
+- Node.js
+- Express
+- TypeScript
+- Zod
 
 ### AI API
 
@@ -101,9 +102,9 @@ These features are planned for later versions after the core AI experience is wo
 
 ### Phase 3: Backend API Foundation
 
-- Set up a FastAPI backend
+- Set up a Node.js and Express backend
 - Create basic API routes for each MVP feature
-- Add Pydantic models for request and response validation
+- Add Zod schemas for request and response validation
 - Prepare environment configuration for API keys
 
 ### Phase 4: AI Integration
@@ -152,7 +153,7 @@ TalkPath AI should demonstrate the ability to plan and build a realistic full-st
 Portfolio goals include:
 
 - Showing practical product thinking, not just technical implementation
-- Demonstrating React, TypeScript, FastAPI, and AI API integration
+- Demonstrating React, TypeScript, Express, and AI API integration
 - Keeping the scope focused and achievable
 - Writing clear documentation and development notes
 - Building a project that can grow into a more advanced AI learning platform over time

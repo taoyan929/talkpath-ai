@@ -50,7 +50,7 @@ function App() {
       <section className="status-panel" aria-live="polite">
         <div>
           <h2>Backend Health</h2>
-          <p>React is calling the FastAPI health endpoint.</p>
+          <p>React is calling the Express health endpoint.</p>
         </div>
 
         {isLoading && <p className="status loading">Checking backend...</p>}

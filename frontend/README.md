@@ -2,7 +2,7 @@
 
 This folder contains the React frontend for TalkPath AI.
 
-The first frontend milestone is a simple full-stack communication check. The React app calls the FastAPI backend health endpoint and displays the response.
+The first frontend milestone is a simple full-stack communication check. The React app calls the Express backend health endpoint and displays the response.
 
 ## Install Dependencies
 
@@ -28,8 +28,8 @@ Start the backend before testing the connection:
 
 ```bash
 cd ../backend
-source .venv/bin/activate
-uvicorn app.main:app --reload
+npm install
+npm run dev
 ```
 
 The frontend calls:

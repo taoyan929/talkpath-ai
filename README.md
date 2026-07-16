@@ -27,8 +27,9 @@ The initial version will focus on a clean product foundation rather than complex
 
 ## Tech Stack
 
-- **Frontend:** React or Next.js with TypeScript
-- **Backend:** Node.js with Express or NestJS
+- **Frontend:** React, Vite, and TypeScript
+- **Backend:** Node.js, Express, and TypeScript
+- **API Validation:** Zod
 - **Database:** PostgreSQL
 - **AI:** OpenAI API for conversation coaching and feedback
 - **Authentication:** JWT or session-based authentication
