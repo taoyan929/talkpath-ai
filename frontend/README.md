@@ -2,7 +2,7 @@
 
 This folder contains the React frontend for TalkPath AI.
 
-The first frontend milestone is a simple full-stack communication check. The React app calls the Express backend health endpoint and displays the response.
+The current frontend includes a Writing Coach form that sends text and an optional learning goal to the Express backend. It displays the corrected text, overall feedback, and structured writing suggestions returned by the API.
 
 ## Install Dependencies
 
@@ -36,6 +36,7 @@ The frontend calls:
 
 ```text
 http://127.0.0.1:8000/api/health
+http://127.0.0.1:8000/api/writing/feedback
 ```
 
 You can change the backend URL by creating a `.env` file:

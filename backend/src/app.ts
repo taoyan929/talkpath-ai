@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 
+import { globalErrorHandler, notFoundHandler } from "./middleware/errors";
 import { healthRouter } from "./routes/health";
 import { writingRouter } from "./routes/writing";
 
@@ -20,3 +21,6 @@ app.get("/", (_request, response) => {
 
 app.use("/api", healthRouter);
 app.use("/api/writing", writingRouter);
+
+app.use(notFoundHandler);
+app.use(globalErrorHandler);

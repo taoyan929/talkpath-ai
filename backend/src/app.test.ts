@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
-import { after, before, test } from "node:test";
-import type { AddressInfo } from "node:net";
 import type { Server } from "node:http";
+import type { AddressInfo } from "node:net";
+import { after, before, test } from "node:test";
+import express from "express";
 
 import { app } from "./app";
+import { globalErrorHandler, notFoundHandler } from "./middleware/errors";
 
 let server: Server;
 let baseUrl: string;
@@ -118,5 +120,47 @@ test("POST /api/writing/feedback rejects invalid text", async () => {
     });
 
     assert.equal(response.status, 422);
+  }
+});
+
+test("unknown routes return a JSON 404 response", async () => {
+  const response = await fetch(`${baseUrl}/api/does-not-exist`);
+
+  assert.equal(response.status, 404);
+  assert.match(response.headers.get("content-type") ?? "", /application\/json/);
+  assert.deepEqual(await response.json(), {
+    error: "Not Found",
+    message: "Route GET /api/does-not-exist was not found.",
+  });
+});
+
+test("unexpected server errors return a JSON 500 response", async () => {
+  const errorApp = express();
+
+  errorApp.get("/unexpected-error", () => {
+    throw new Error("Test error");
+  });
+  errorApp.use(notFoundHandler);
+  errorApp.use(globalErrorHandler);
+
+  const errorServer = errorApp.listen(0);
+  const address = errorServer.address() as AddressInfo;
+
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:${address.port}/unexpected-error`,
+    );
+
+    assert.equal(response.status, 500);
+    assert.match(
+      response.headers.get("content-type") ?? "",
+      /application\/json/,
+    );
+    assert.deepEqual(await response.json(), {
+      error: "Internal Server Error",
+      message: "An unexpected error occurred.",
+    });
+  } finally {
+    errorServer.close();
   }
 });
