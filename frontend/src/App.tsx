@@ -13,10 +13,31 @@ type WritingSuggestion = {
   explanation: string;
 };
 
+type WritingKeyPhrase = {
+  phrase: string;
+  meaning: string;
+  example: string;
+};
+
+type WritingWordMeaning = {
+  part_of_speech: string;
+  meaning: string;
+  example: string;
+};
+
+type WritingWordDetails = {
+  word: string;
+  pronunciation: string;
+  meanings: WritingWordMeaning[];
+};
+
 type WritingFeedback = {
   overall_feedback: string;
   corrected_text: string;
+  natural_version: string;
   suggestions: WritingSuggestion[];
+  key_phrases: WritingKeyPhrase[];
+  word_details: WritingWordDetails | null;
 };
 
 type ApiErrorResponse = {
@@ -198,8 +219,8 @@ function App() {
               </span>
               <h3>Ready when you are</h3>
               <p>
-                Add your writing and choose “Get feedback”. Your corrected text
-                and suggestions will appear here.
+                Add your writing and choose “Get feedback”. Your corrected
+                text, natural version, and suggestions will appear here.
               </p>
             </div>
           )}
@@ -211,9 +232,38 @@ function App() {
                 <p>{feedback.overall_feedback}</p>
               </div>
 
+              {feedback.word_details && (
+                <section className="dictionary-card" aria-label="Word details">
+                  <p className="result-label">Dictionary</p>
+                  <div className="dictionary-heading">
+                    <h3>{feedback.word_details.word}</h3>
+                    <span>{feedback.word_details.pronunciation}</span>
+                  </div>
+
+                  <ol className="word-meaning-list">
+                    {feedback.word_details.meanings.map((wordMeaning, index) => (
+                      <li key={`${wordMeaning.part_of_speech}-${index}`}>
+                        <p className="part-of-speech">
+                          {wordMeaning.part_of_speech}
+                        </p>
+                        <p>{wordMeaning.meaning}</p>
+                        <p className="phrase-example">
+                          Example: {wordMeaning.example}
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              )}
+
               <div className="corrected-card">
                 <p className="result-label">Corrected text</p>
                 <p>{feedback.corrected_text}</p>
+              </div>
+
+              <div className="natural-card">
+                <p className="result-label">More natural version</p>
+                <p>{feedback.natural_version}</p>
               </div>
 
               <div className="suggestions-section">
@@ -222,25 +272,55 @@ function App() {
                   <span>{feedback.suggestions.length}</span>
                 </div>
 
-                <ol className="suggestion-list">
-                  {feedback.suggestions.map((suggestion, index) => (
-                    <li
-                      className="suggestion-card"
-                      key={`${suggestion.category}-${index}`}
-                    >
-                      <div className="suggestion-meta">
-                        <span>{suggestion.category}</span>
-                        <span>{String(index + 1).padStart(2, "0")}</span>
-                      </div>
-                      <p className="word-change">
-                        <del>{suggestion.original}</del>
-                        <span aria-hidden="true">→</span>
-                        <ins>{suggestion.replacement}</ins>
-                      </p>
-                      <p className="explanation">{suggestion.explanation}</p>
-                    </li>
-                  ))}
-                </ol>
+                {feedback.suggestions.length === 0 ? (
+                  <p className="empty-result">No corrections needed.</p>
+                ) : (
+                  <ol className="suggestion-list">
+                    {feedback.suggestions.map((suggestion, index) => (
+                      <li
+                        className="suggestion-card"
+                        key={`${suggestion.category}-${index}`}
+                      >
+                        <div className="suggestion-meta">
+                          <span>{suggestion.category}</span>
+                          <span>{String(index + 1).padStart(2, "0")}</span>
+                        </div>
+                        <p className="word-change">
+                          <del>{suggestion.original}</del>
+                          <span aria-hidden="true">→</span>
+                          <ins>{suggestion.replacement}</ins>
+                        </p>
+                        <p className="explanation">{suggestion.explanation}</p>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </div>
+
+              <div className="key-phrases-section">
+                <div className="suggestions-heading">
+                  <p className="result-label">Key phrases</p>
+                  <span>{feedback.key_phrases.length}</span>
+                </div>
+
+                {feedback.key_phrases.length === 0 ? (
+                  <p className="empty-result">No key phrases for this text.</p>
+                ) : (
+                  <ul className="key-phrase-list">
+                    {feedback.key_phrases.map((keyPhrase, index) => (
+                      <li
+                        className="key-phrase-card"
+                        key={`${keyPhrase.phrase}-${index}`}
+                      >
+                        <p className="key-phrase">{keyPhrase.phrase}</p>
+                        <p className="phrase-meaning">{keyPhrase.meaning}</p>
+                        <p className="phrase-example">
+                          Example: {keyPhrase.example}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
           )}

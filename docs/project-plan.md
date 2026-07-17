@@ -74,7 +74,7 @@ These features are planned for later versions after the core AI experience is wo
 
 ### Database
 
-- MongoDB, added after the core AI features are working
+- PostgreSQL, added after the core AI features are working
 
 ### Deployment
 
@@ -119,7 +119,7 @@ These features are planned for later versions after the core AI experience is wo
 - Add simple storage for recent practice sessions
 - Connect practice history to the dashboard
 - Keep the data model small and easy to understand
-- Add MongoDB only after the core AI flows are stable
+- Add PostgreSQL only after the core AI flows are stable
 
 ### Phase 6: Polish and Portfolio Preparation
 

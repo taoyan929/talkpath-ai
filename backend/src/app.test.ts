@@ -4,13 +4,16 @@ import type { AddressInfo } from "node:net";
 import { after, before, test } from "node:test";
 import express from "express";
 
-import { app } from "./app";
+import { createApp } from "./app";
 import { globalErrorHandler, notFoundHandler } from "./middleware/errors";
+import { WritingFeedbackProviderError } from "./providers/gemini-writing";
+import { mockWritingFeedbackProvider } from "./providers/writing-feedback";
 
 let server: Server;
 let baseUrl: string;
 
 before(() => {
+  const app = createApp(mockWritingFeedbackProvider);
   server = app.listen(0);
   const address = server.address() as AddressInfo;
   baseUrl = `http://127.0.0.1:${address.port}`;
@@ -52,8 +55,9 @@ test("POST /api/writing/feedback returns the fixed mock response", async () => {
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), {
     overall_feedback:
-      "Your message is understandable, but some grammar and word choices can be improved.",
+      "Your meaning is clear. Focus on the past tense and the article before the place.",
     corrected_text: "I went to the supermarket yesterday.",
+    natural_version: "I went to the supermarket yesterday.",
     suggestions: [
       {
         category: "grammar",
@@ -70,6 +74,14 @@ test("POST /api/writing/feedback returns the fixed mock response", async () => {
           "Use 'the' when referring to a specific place in this context.",
       },
     ],
+    key_phrases: [
+      {
+        phrase: "went to",
+        meaning: "travelled to or visited a place",
+        example: "We went to the library after lunch.",
+      },
+    ],
+    word_details: null,
   });
 });
 
@@ -162,5 +174,60 @@ test("unexpected server errors return a JSON 500 response", async () => {
     });
   } finally {
     errorServer.close();
+  }
+});
+
+test("writing provider failures return safe JSON responses", async () => {
+  const errorCases = [
+    {
+      kind: "invalid_response" as const,
+      status: 502,
+      body: {
+        error: "Invalid Writing Coach Response",
+        message:
+          "The Writing Coach returned an invalid response. Please try again.",
+      },
+    },
+    {
+      kind: "timeout" as const,
+      status: 504,
+      body: {
+        error: "Writing Coach Timeout",
+        message: "The Writing Coach took too long to respond. Please try again.",
+      },
+    },
+    {
+      kind: "unavailable" as const,
+      status: 503,
+      body: {
+        error: "Writing Coach Unavailable",
+        message:
+          "The Writing Coach service is temporarily unavailable. Please try again.",
+      },
+    },
+  ];
+
+  for (const errorCase of errorCases) {
+    const errorApp = createApp(() =>
+      Promise.reject(new WritingFeedbackProviderError(errorCase.kind)),
+    );
+    const errorServer = errorApp.listen(0);
+    const address = errorServer.address() as AddressInfo;
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:${address.port}/api/writing/feedback`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: "Hello" }),
+        },
+      );
+
+      assert.equal(response.status, errorCase.status);
+      assert.deepEqual(await response.json(), errorCase.body);
+    } finally {
+      errorServer.close();
+    }
   }
 });

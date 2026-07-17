@@ -2,7 +2,7 @@
 
 This folder contains the Node.js, Express, and TypeScript backend for TalkPath AI.
 
-The backend currently includes a root endpoint, a health check, and a mock Writing Coach endpoint. It does not include a database, authentication, or AI API integration yet.
+The backend includes a root endpoint, a health check, and a Writing Coach endpoint that can use either fixed mock feedback or Gemini.
 
 ## Requirements
 
@@ -16,6 +16,31 @@ From the backend folder, run:
 ```bash
 npm install
 ```
+
+## Choose the Writing Feedback Provider
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+The mock provider is the default and does not require an API key:
+
+```env
+WRITING_FEEDBACK_PROVIDER=mock
+```
+
+To use real Gemini feedback, update `.env`:
+
+```env
+WRITING_FEEDBACK_PROVIDER=gemini
+GEMINI_API_KEY=your_api_key
+GEMINI_MODEL=gemini-3.5-flash
+GEMINI_TIMEOUT_MS=15000
+```
+
+Keep `GEMINI_API_KEY` in the backend environment only. Never add the real key to `.env.example`, frontend files, or Git.
 
 ## Run the Backend Locally
 
@@ -50,7 +75,7 @@ npm start
 
 - `GET /`: returns a welcome message
 - `GET /api/health`: returns the backend health status
-- `POST /api/writing/feedback`: validates writing input and returns mock feedback
+- `POST /api/writing/feedback`: validates writing input and returns mock or Gemini feedback
 
 ## Test the Health Endpoint
 
@@ -81,8 +106,9 @@ Example response:
 
 ```json
 {
-  "overall_feedback": "Your message is understandable, but some grammar and word choices can be improved.",
+  "overall_feedback": "Your meaning is clear. Focus on the past tense and the article before the place.",
   "corrected_text": "I went to the supermarket yesterday.",
+  "natural_version": "I went to the supermarket yesterday.",
   "suggestions": [
     {
       "category": "grammar",
@@ -96,18 +122,40 @@ Example response:
       "replacement": "the supermarket",
       "explanation": "Use 'the' when referring to a specific place in this context."
     }
-  ]
+  ],
+  "key_phrases": [
+    {
+      "phrase": "went to",
+      "meaning": "travelled to or visited a place",
+      "example": "We went to the library after lunch."
+    }
+  ],
+  "word_details": null
 }
 ```
 
 The request is validated with Zod. `text` must be a string containing between 1 and 5000 characters and cannot contain only whitespace. `goal` is an optional string; it may also be `null` for compatibility with the previous API. Invalid requests receive a `422 Unprocessable Entity` response.
 
-The mock response is also parsed through a Zod schema when the application starts. This ensures its overall feedback, corrected text, and structured suggestions have the expected types before Express returns it.
+Both providers return the same response shape. The mock response is parsed with Zod when the application starts. Gemini is asked for structured JSON, and its response is parsed and validated with the same Zod schema before Express returns it.
+
+The response keeps necessary corrections in `corrected_text` and optional idiomatic phrasing in `natural_version`. It also returns distinct correction suggestions and up to three useful `key_phrases`.
+
+When the trimmed input contains one English word, the provider switches to dictionary mode. In that mode, `word_details` contains the word, an IPA pronunciation, and one to three common meanings with parts of speech and example sentences. For normal writing input, `word_details` is `null`.
+
+The small dataset in `src/evals/writing-feedback-cases.ts` contains quality cases for future prompt evaluation. Its automated test checks dataset coverage only and never calls Gemini.
 
 ## Source Structure
 
 ```text
 src/
+├── evals/
+│   ├── writing-feedback-cases.test.ts
+│   └── writing-feedback-cases.ts
+├── middleware/
+│   └── errors.ts
+├── providers/
+│   ├── gemini-writing.ts
+│   └── writing-feedback.ts
 ├── routes/
 │   ├── health.ts
 │   └── writing.ts
@@ -120,6 +168,7 @@ src/
 
 - `app.ts` configures Express, CORS, JSON parsing, and routers.
 - `server.ts` starts the HTTP server.
+- `providers/` selects mock or Gemini feedback and validates provider output.
 - `routes/` contains endpoint handlers.
 - `schemas/` contains Zod request and response schemas.
-- `app.test.ts` verifies the public API contract.
+- Test files verify the public API contract, provider errors, and Gemini response parsing without making real Gemini requests.

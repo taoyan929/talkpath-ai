@@ -1,45 +1,27 @@
 import { Router } from "express";
 
-import {
-  writingFeedbackRequestSchema,
-  writingFeedbackResponseSchema,
-} from "../schemas/writing";
+import type { WritingFeedbackProvider } from "../providers/gemini-writing";
+import { writingFeedbackRequestSchema } from "../schemas/writing";
 
-export const writingRouter = Router();
+export function createWritingRouter(provider: WritingFeedbackProvider): Router {
+  const router = Router();
 
-const mockFeedback = writingFeedbackResponseSchema.parse({
-  overall_feedback:
-    "Your message is understandable, but some grammar and word choices can be improved.",
-  corrected_text: "I went to the supermarket yesterday.",
-  suggestions: [
-    {
-      category: "grammar",
-      original: "go",
-      replacement: "went",
-      explanation: "Use the past tense because the action happened yesterday.",
-    },
-    {
-      category: "article",
-      original: "supermarket",
-      replacement: "the supermarket",
-      explanation:
-        "Use 'the' when referring to a specific place in this context.",
-    },
-  ],
-});
+  router.post("/feedback", async (request, response) => {
+    const validationResult = writingFeedbackRequestSchema.safeParse(request.body);
 
-writingRouter.post("/feedback", (request, response) => {
-  const validationResult = writingFeedbackRequestSchema.safeParse(request.body);
+    if (!validationResult.success) {
+      return response.status(422).json({
+        detail: validationResult.error.issues.map((issue) => ({
+          type: issue.code,
+          loc: ["body", ...issue.path],
+          msg: issue.message,
+        })),
+      });
+    }
 
-  if (!validationResult.success) {
-    return response.status(422).json({
-      detail: validationResult.error.issues.map((issue) => ({
-        type: issue.code,
-        loc: ["body", ...issue.path],
-        msg: issue.message,
-      })),
-    });
-  }
+    const feedback = await provider(validationResult.data);
+    return response.json(feedback);
+  });
 
-  return response.json(mockFeedback);
-});
+  return router;
+}

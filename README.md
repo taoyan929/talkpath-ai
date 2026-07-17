@@ -31,7 +31,7 @@ The initial version will focus on a clean product foundation rather than complex
 - **Backend:** Node.js, Express, and TypeScript
 - **API Validation:** Zod
 - **Database:** PostgreSQL
-- **AI:** OpenAI API for conversation coaching and feedback
+- **AI:** Google Gemini API for writing coaching and feedback
 - **Authentication:** JWT or session-based authentication
 - **Styling:** Tailwind CSS or a component-based design system
 - **Monorepo Tooling:** npm workspaces, pnpm workspaces, or Turborepo
