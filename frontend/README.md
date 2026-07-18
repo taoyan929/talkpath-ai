@@ -2,7 +2,12 @@
 
 This folder contains the React frontend for TalkPath AI.
 
-The current frontend includes a Writing Coach form that sends text and an optional learning goal to the Express backend. It displays the corrected text, overall feedback, and structured writing suggestions returned by the API.
+The frontend provides two automatic learning modes:
+
+- **Dictionary mode** handles one English word and displays pronunciation, meanings, parts of speech, and examples.
+- **Writing feedback mode** handles sentences and longer text and displays overall feedback, corrected text, a natural version, suggestions, and key phrases.
+
+The form also provides optional quick learning goals, copy actions, Retry, Start over, collapsible learning sections, and mode-specific loading states. No account is required, and work is not currently saved. Vocabulary saving and review are future features.
 
 ## Install Dependencies
 
@@ -20,6 +25,14 @@ The frontend will run at:
 
 ```text
 http://127.0.0.1:5173
+```
+
+## Run Frontend Checks
+
+```bash
+npm test
+npm run typecheck
+npm run build
 ```
 
 ## Backend Requirement

@@ -6,7 +6,7 @@
 
 TalkPath AI is a full-stack portfolio project for an AI-powered English learning coach. The app is designed to help learners practice practical communication skills through guided conversation, pronunciation support, personalized feedback, and goal-based learning paths.
 
-The initial version will focus on a clean product foundation rather than complex features. Future iterations can add AI conversation flows, speech analysis, progress tracking, and adaptive learning recommendations.
+The current MVP focuses on one complete learning flow: users can look up a single English word or submit sentences and short messages for structured Gemini feedback.
 
 ## Target Users
 
@@ -16,25 +16,81 @@ The initial version will focus on a clean product foundation rather than complex
 - Immigrants, travelers, and job seekers who need practical English confidence
 - Independent learners who want structured feedback outside a classroom
 
-## Planned MVP Features
+## Current MVP Features
 
-- User onboarding with English level and learning goals
-- AI-guided conversation practice for everyday scenarios
-- Vocabulary and phrase suggestions based on user goals
-- Speaking practice sessions with pronunciation feedback
-- Progress dashboard for completed lessons and skill growth
-- Saved practice history and personalized recommendations
+- **Dictionary mode:** a single English word returns pronunciation, simple meanings, parts of speech, and examples
+- **Writing feedback mode:** sentences and longer text return overall feedback, corrections, a natural version, suggestions, and key phrases
+- Optional free-text learning goals and quick goal choices
+- Copy actions, collapsible learning sections, Retry, Start over, and mode-specific loading states
+- No account is required and submitted work is not currently saved
+
+Saving vocabulary, reviewing learned words, accounts, practice history, speech features, and progress tracking are future features.
 
 ## Tech Stack
 
 - **Frontend:** React, Vite, and TypeScript
 - **Backend:** Node.js, Express, and TypeScript
 - **API Validation:** Zod
-- **Database:** PostgreSQL
 - **AI:** Google Gemini API for writing coaching and feedback
-- **Authentication:** JWT or session-based authentication
-- **Styling:** Tailwind CSS or a component-based design system
-- **Monorepo Tooling:** npm workspaces, pnpm workspaces, or Turborepo
+- **Styling:** Plain CSS
+
+The MVP does not currently use a database or authentication.
+
+## macOS Local Launcher
+
+The local launcher starts the existing Express backend and Vite frontend together, waits for them to become ready, and opens `http://localhost:5173` in your default browser. Node.js and npm must already be installed. If you use nvm, the launcher will try to load your existing `~/.nvm/nvm.sh` when Finder does not provide Node.js on `PATH`.
+
+### First-Time Setup
+
+From the project root, install both sets of dependencies if needed:
+
+```bash
+cd backend
+npm install
+cd ../frontend
+npm install
+cd ..
+```
+
+Create the local backend environment file if it does not already exist:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+Add your Gemini configuration to `backend/.env`. This file remains local and is ignored by Git; the launcher checks that it exists but never prints its contents.
+
+Make the launcher files executable once:
+
+```bash
+chmod +x "TalkPath AI.command" scripts/start-talkpath-local.sh scripts/stop-talkpath-local.sh
+```
+
+### Start by Double-Clicking
+
+In Finder, open the project folder and double-click `TalkPath AI.command`. A Terminal window stays open while the backend and frontend are running. Closing that window or pressing `Control-C` stops both launcher-managed services.
+
+The launcher refuses to start duplicates if port 8000 or 5173 is already occupied. It does not stop processes that were started manually or by another application.
+
+### Stop from Another Terminal
+
+You can also stop services started by the launcher with:
+
+```bash
+./scripts/stop-talkpath-local.sh
+```
+
+Local logs and PID files are written to `.talkpath-local/`. The folder is ignored by Git and does not contain the Gemini API key.
+
+### If macOS Blocks the Launcher
+
+If macOS says the file cannot be opened, right-click `TalkPath AI.command`, choose **Open**, then confirm **Open**. You can also check **System Settings → Privacy & Security** for an **Open Anyway** option.
+
+If the file was downloaded and you trust this project copy, you can remove only its quarantine attribute:
+
+```bash
+xattr -d com.apple.quarantine "TalkPath AI.command"
+```
 
 ## Development Roadmap
 

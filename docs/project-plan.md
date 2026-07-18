@@ -20,32 +20,30 @@ TalkPath AI aims to solve this by giving learners practical coaching, realistic 
 - Professionals who need clearer emails, messages, and responses
 - Independent learners who want structured practice without a tutor
 
-## 4. MVP Features
+## 4. Current MVP Features
 
 ### Writing Coach
 
-Helps users improve short pieces of writing by giving feedback on grammar, clarity, tone, and natural phrasing.
+Handles sentences and longer text and provides overall feedback, minimal corrections, a natural version, distinct suggestions, and useful key phrases.
 
-### Message Rewriter
+### Dictionary Mode
 
-Rewrites user messages for different situations, such as polite, professional, friendly, concise, or confident communication.
+Handles a single English word and provides its pronunciation, common meanings, parts of speech, and example sentences.
 
-### Scenario Practice
+### MVP Usability
 
-Provides guided practice for real-world situations, including daily life, workplace, study, and interview scenarios.
+- Automatically displays the current input mode
+- Supports free-text and quick learning goals
+- Provides copy actions, collapsible learning sections, Retry, Start over, and mode-specific loading states
+- Requires no account and does not currently save submitted work
 
-### Basic Practice History
-
-Stores a simple record of recent practice sessions so users can review what they worked on.
-
-### Simple Dashboard
-
-Shows key user activity, such as recent practice, completed scenarios, and basic progress indicators.
-
-## 5. Non-MVP Features
+## 5. Future Features
 
 These features are planned for later versions after the core AI experience is working well.
 
+- Vocabulary saving and review
+- Message rewriting and scenario practice
+- Practice history and a progress dashboard
 - RAG knowledge base for richer, context-aware coaching content
 - Speaking practice with voice input and pronunciation feedback
 - Personalised learning plan based on goals, level, and past practice
@@ -59,7 +57,7 @@ These features are planned for later versions after the core AI experience is wo
 - React
 - TypeScript
 - Vite
-- Tailwind CSS
+- Plain CSS
 
 ### Backend
 
@@ -130,13 +128,12 @@ These features are planned for later versions after the core AI experience is wo
 
 ## 8. Success Criteria
 
-The MVP will be considered successful when users can:
+The current MVP is successful when users can:
 
 - Submit writing and receive useful AI feedback
-- Rewrite messages for different communication goals
-- Practise common real-world English scenarios
-- View recent practice history
-- Understand their basic activity through a simple dashboard
+- Look up a single English word without selecting a separate tool
+- Reuse, copy, collapse, retry, and reset feedback without losing control of their input
+- Understand that no account is required and their work is not currently saved
 
 From a technical perspective, the project should show:
 

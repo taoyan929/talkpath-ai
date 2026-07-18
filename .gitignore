@@ -21,6 +21,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Local TalkPath AI launcher state
+.talkpath-local/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -37,4 +40,3 @@ coverage/
 # Cache
 .turbo/
 .cache/
-
